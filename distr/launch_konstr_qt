@@ -1,0 +1,94 @@
+#!/bin/sh
+# TestMaker Plus Launcher
+# Copyright (c) Tim K (Timofey Koryakin), Ivan Shiryaev and Tamara Kulikova 2017-2018. 
+BASEDIR=`dirname $0`
+BASEDIR=`sh -c "cd $BASEDIR && cd .. && pwd"`
+if test "$KONSTRQT_DEBUG" = "1"; then
+	echo "TestMaker Plus installation directory: $BASEDIR"
+fi
+CURRENT_OS=`uname`
+if test "$CURRENT_OS" = "SunOS"; then
+	CURRENT_OS="Sun Solaris"
+elif test "$CURRENT_OS" = "Linux"; then
+	CURRENT_OS="Linux"
+elif test "$CURRENT_OS" = "Darwin"; then
+	CURRENT_OS="Apple Mac OS X"
+fi
+if test "$KONSTRQT_DEBUG" = "1"; then
+	echo "Current OS is $CURRENT_OS"
+fi
+
+USAGE_MESSAGE="Usage: $0 [-editor or -testsystem]"
+if test -e "$BASEDIR/App/migrator"; then
+	USAGE_MESSAGE="Usage: $0 [-editor or -migrator or -testsystem]"
+fi
+
+if test "$1" = "" || test "$1" = "--help" || test "$1" = "-help" || test "$1" = "-h" || test "$1" = "-?"; then
+	echo "$USAGE_MESSAGE"
+	exit 0
+fi
+QTPREFIX="qt5.2_konstr"
+if test "$CURRENT_OS" = "Sun Solaris"; then
+	QTPREFIX="qt4.5_konstr"
+fi
+TO_RUN=""
+QTPATH="$BASEDIR/$QTPREFIX"
+if test "$1" = "-mksymlinks" && test "$CURRENT_OS" != "Sun Solaris"; then
+	ln -s "$QTPATH/plugins/platforms" "$BASEDIR/platforms"
+	ln -s "$QTPATH/plugins/platforms" "$BASEDIR/App/platforms"
+	ln -s "$QTPATH/plugins/platforms" "$BASEDIR/Launchers/platforms"
+	exit 0
+elif test "$1" = "-rmsymlinks"; then
+	unlink "$BASEDIR/platforms"
+	unlink "$BASEDIR/App/platforms"
+	unlink "$BASEDIR/Launchers/platforms"
+	exit 0
+elif test "$1" = "-mkshortcuts" && test "$CURRENT_OS" != "Apple Mac OS X"; then
+	echo "[Desktop Entry]" > /usr/share/applications/konstr_qt.desktop
+	echo "Name=Тестирующая система" >> /usr/share/applications/konstr_qt.desktop
+	echo "Type=Application" >> /usr/share/applications/konstr_qt.desktop
+	echo "Exec=$BASEDIR/Launchers/launch_konstr_qt -testsystem" >> /usr/share/applications/konstr_qt.desktop
+	echo "Terminal=false" >> /usr/share/applications/konstr_qt.desktop
+	echo "StartupNotify=true" >> /usr/share/applications/konstr_qt.desktop
+	echo "Categories=Education;" >> /usr/share/applications/konstr_qt.desktop
+	echo "Icon=$BASEDIR/konstr_qt.png" >> /usr/share/applications/konstr_qt.desktop
+	echo "[Desktop Entry]" > /usr/share/applications/testmakerplus_editor.desktop
+	echo "Name=Редактор тестов" >> /usr/share/applications/testmakerplus_editor.desktop
+	echo "Type=Application" >> /usr/share/applications/testmakerplus_editor.desktop
+	echo "Exec=$BASEDIR/Launchers/launch_konstr_qt -editor" >> /usr/share/applications/testmakerplus_editor.desktop
+	echo "Terminal=false" >> /usr/share/applications/testmakerplus_editor.desktop
+	echo "StartupNotify=true" >> /usr/share/applications/testmakerplus_editor.desktop
+	echo "Categories=Education;" >> /usr/share/applications/testmakerplus_editor.desktop
+	echo "Icon=$BASEDIR/konstr_qt.png" >> /usr/share/applications/testmakerplus_editor.desktop
+	if test -e "$BASEDIR/App/migrator"; then
+		echo "[Desktop Entry]" > /usr/share/applications/testmakerplus_editor.desktop
+		echo "Name=Мигратор тестов" >> /usr/share/applications/testmakerplus_migr.desktop
+		echo "Type=Application" >> /usr/share/applications/testmakerplus_migr.desktop
+		echo "Exec=$BASEDIR/Launchers/launch_konstr_qt -migrator" >> /usr/share/applications/testmakerplus_migr.desktop
+		echo "Terminal=true" >> /usr/share/applications/testmakerplus_migr.desktop
+		echo "StartupNotify=true" >> /usr/share/applications/testmakerplus_migr.desktop
+		echo "Categories=Education;" >> /usr/share/applications/testmakerplus_migr.desktop
+		echo "Icon=$BASEDIR/konstr_qt.png" >> /usr/share/applications/testmakerplus_migr.desktop
+	fi
+	exit 0
+elif test "$1" = "-rmshortcuts" && test "$CURRENT_OS" != "Apple Mac OS X"; then
+	rm -r -f -v /usr/share/applications/konstr_qt.desktop /usr/share/applications/testmakerplus_*.desktop
+	exit 0
+elif test "$1" = "-editor"; then
+	TO_RUN="editor"
+elif test "$1" = "-testsystem"; then
+	TO_RUN="konstr_qt"
+elif test "$1" = "-migrator" && test -e "$BASEDIR/App/migrator"; then
+	TO_RUN="migrator"
+else
+	echo "Unknown option: $1"
+	exit 1
+fi
+BINDIR="$BASEDIR/App"
+if sh -c "LD_LIBRARY_PATH=\"$QTPATH/lib\" $BINDIR/$TO_RUN && exit \$?"; then
+	echo "ok"
+	exit 0
+else
+	echo "error"
+	exit 1
+fi
