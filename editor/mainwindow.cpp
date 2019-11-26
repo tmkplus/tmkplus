@@ -755,7 +755,6 @@ void MainWindow::on_action_4_triggered()
 #ifndef QT5_BUILD
     qvernum = 4
 #endif
-    QMessageBox::information(this, tmktr("О программе"), tmktr("Редактор тестов TestMaker Plus") + " (" + tmktr("версия") + " " + QString::number(TMKVERSION) + ")\n" + tmktr("Разработчики") + ": Тимофей Корякин, Иван Ширяев, Тамара Куликова\n\n\n" + tmktr("Эта программа использует библиотеку Qt") + " " + QString::number(qvernum), QMessageBox::Ok);
 }
 
 void MainWindow::on_pushButton_4_clicked()

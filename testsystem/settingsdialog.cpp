@@ -167,42 +167,6 @@ void SettingsDialog::on_pushButton_2_clicked()
 }
 
 void SettingsDialog::ShowAbout() {
-    QString about_dialog_string = "TestMaker Plus\n" + tmktr("Версия") + " " + QString::number(TMKVERSION) + "\n" + tmktr("Разработчики") + ": Тимофей Корякин, Иван Ширяев, Тамара Куликова.\n\n" + tmktr("Эта программа использует библиотеку Qt") + " ^QVER^.\n\n";
-#ifdef QT5_BUILD
-    about_dialog_string.replace("^QVER^", "5");
-#else
-    about_dialog_string.replace("^QVER^", "4");
-#endif
-    about_dialog_string = about_dialog_string + tmktr("Запускается на") + " " + GetCurrentOperatingSystem() + ".\n";
-#ifdef Q_OS_ANDROID
-    about_dialog_string = about_dialog_string + "Мобильная версия для Android (бета).\n";
-#endif
-    /*
-    about_dialog_string = about_dialog_string + "Включенные функции: ";
-#ifdef USE_QT_NATIVE_DOWNLOAD_MANAGER
-    about_dialog_string = about_dialog_string + "USE_QT_NATIVE_DOWNLOAD_MANAGER, ";
-#endif
-#ifdef MODERN_FILE_READER
-    about_dialog_string = about_dialog_string + "MODERN_FILE_READER, ";
-#endif
-#ifdef ALLOW_DOWNLOADS_FEATURE
-    about_dialog_string = about_dialog_string + "ALLOW_DOWNLOADS_FEATURE, ";
-#endif
-#ifdef ENABLE_ACTIVATION
-    about_dialog_string = about_dialog_string + "ENABLE_ACTIVATION, ";
-#endif
-#ifdef NEW_CHECK_ANSWERS_CODE
-    about_dialog_string = about_dialog_string + "NEW_CHECK_ANSWERS_CODE, ";
-#endif
-#ifdef VERIFY_ACTIVATION_KEY_ONLINE
-    about_dialog_string = about_dialog_string + "VERIFY_ACTIVATION_KEY_ONLINE, ";
-#endif
-#ifdef ENABLE_TEST_RESULTS_PROTECTION
-    about_dialog_string = about_dialog_string + "ENABLE_TEST_RESULTS_PROTECTION, ";
-#endif
-    about_dialog_string = about_dialog_string.left(about_dialog_string.length() - 2);
-    */
-    QMessageBox::information(0, tmktr("О программе"), about_dialog_string, QMessageBox::Ok);
 }
 
 void SettingsDialog::on_pushButton_clicked()
